@@ -1,0 +1,45 @@
+org: thearpitsarap
+app: serverless-data-operation
+service: aws-node-project
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:BatchGetItem
+        - dynamodb:BatchWriteItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:*:*:table/todos"
+
+functions:
+  dataoperations:
+    handler: index.dataoperations
+    events:
+      - http:
+          path: /
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    Dataformtable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: todos
+        AttributeDefinitions:
+          - AttributeName: date
+            AttributeType: N
+        KeySchema:
+          - AttributeName: date
+            KeyType: HASH
+        ProvisionedThroughput:
+            ReadCapacityUnits: 3
+            WriteCapacityUnits: 3
